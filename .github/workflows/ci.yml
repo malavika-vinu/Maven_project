@@ -1,38 +1,42 @@
+
 name: DevOps Java CI Automation Pipeline
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 jobs:
   build-and-validate:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        java-version: [17, 21]
 
     steps:
-      - name: Checkout Source Code
+      - name: Checkout source code
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
+      - name: Set up JDK ${{ matrix.java-version }}
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: 'maven'
+          java-version: ${{ matrix.java-version }}
+          distribution: temurin
+          cache: maven
 
-      - name: Compile Code Base
+      - name: Compile code base
         run: mvn clean compile
 
-      - name: Run Automated Test Suites
+      - name: Run automated test suites
         run: mvn test
 
-      - name: Package Executable Distribution
+      - name: Package executable distribution
         run: mvn package
 
-      - name: Upload Build Artifact for Verification
+      - name: Upload build artifact for verification
         uses: actions/upload-artifact@v4
         with:
-          name: production-ready-jar
+          name: production-ready-jar-java-${{ matrix.java-version }}
           path: target/*.jar
           retention-days: 5
