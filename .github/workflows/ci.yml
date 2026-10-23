@@ -51,4 +51,4 @@ jobs:
       - name: Deploy to staging container
         run: |
           echo "Approval granted! Deploying to staging stack..."
-          docker-compose up -d
+          docker compose up -d
