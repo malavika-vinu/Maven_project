@@ -1,4 +1,3 @@
-
 name: DevOps Java CI Automation Pipeline
 
 on:
@@ -10,12 +9,13 @@ on:
 jobs:
   build-and-validate:
     runs-on: ubuntu-latest
+
     strategy:
       matrix:
         java-version: [17, 21]
 
     steps:
-      - name: Checkout source code
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
       - name: Set up JDK ${{ matrix.java-version }}
@@ -25,30 +25,31 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Compile code base
+      - name: Compile Code Base
         run: mvn clean compile
 
-      - name: Run automated test suites
+      - name: Run Automated Test Suites
         run: mvn test
 
-      - name: Package executable distribution
+      - name: Package Executable Distribution
         run: mvn package
 
-      - name: Upload build artifact for verification
+      - name: Upload Build Artifact for Verification
         uses: actions/upload-artifact@v4
         with:
           name: production-ready-jar-java-${{ matrix.java-version }}
           path: target/*.jar
           retention-days: 5
-  deploy-staging:
+
+  deploy-production:
     needs: build-and-validate
     runs-on: ubuntu-latest
-    environment: staging
+
     steps:
-      - name: Checkout source code
+      - name: Checkout Source Code
         uses: actions/checkout@v4
 
-      - name: Deploy to staging container
+      - name: Deploy to Production Environment
         run: |
-          echo "Approval granted! Deploying to staging stack..."
-          docker compose up -d
+          echo "CI tests passed. Deploying automatically..."
+          docker compose up -d --force-recreate
