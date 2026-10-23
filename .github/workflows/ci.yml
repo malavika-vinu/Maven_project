@@ -40,3 +40,15 @@ jobs:
           name: production-ready-jar-java-${{ matrix.java-version }}
           path: target/*.jar
           retention-days: 5
+  deploy-staging:
+    needs: build-and-validate
+    runs-on: ubuntu-latest
+    environment: staging
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      - name: Deploy to staging container
+        run: |
+          echo "Approval granted! Deploying to staging stack..."
+          docker-compose up -d
